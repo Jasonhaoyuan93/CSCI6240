@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'edu.neu.cs6620.hw1'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 repositories {
     mavenCentral()
@@ -14,15 +14,8 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common
     implementation group: 'org.apache.hadoop', name: 'hadoop-common', version: '3.3.6'
-    // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core
-    implementation group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '3.3.6'
     // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client
     implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '3.3.6'
-    // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-hdfs
-    testImplementation group: 'org.apache.hadoop', name: 'hadoop-hdfs', version: '3.3.6'
-    // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-aws
-    implementation group: 'org.apache.hadoop', name: 'hadoop-aws', version: '3.3.6'
-
 }
 
 test {
