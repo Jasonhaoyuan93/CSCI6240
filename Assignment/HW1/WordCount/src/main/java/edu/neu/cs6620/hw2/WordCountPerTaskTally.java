@@ -1,5 +1,9 @@
 package edu.neu.cs6620.hw2;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -11,19 +15,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 public class WordCountPerTaskTally {
 
   public static class TokenizerMapper
       extends Mapper<Object, Text, Text, IntWritable>{
 
-    private final static IntWritable one = new IntWritable(1);
     private final Text word;
+    //add validation service
     private final ValidatorAndPartitioner validatorAndPartitioner;
+    // add Map to store word occurrence
     private final Map<String, Integer> storage;
 
     public TokenizerMapper(){
@@ -33,17 +33,24 @@ public class WordCountPerTaskTally {
     }
 
     @Override
-    public void map(Object key, Text value, Context context
-    ) throws IOException, InterruptedException {
+    public void map(Object key, Text value, Context context){
       StringTokenizer itr = new StringTokenizer(value.toString());
       while (itr.hasMoreTokens()) {
         String curToken = itr.nextToken();
+        //use validation service for filtering and storing occurrence in storage
         if(validatorAndPartitioner.isValid(curToken)){
           storage.compute(curToken, (k,v)->v==null?1:v+1);
         }
       }
     }
 
+    /**
+     * Utilize clean up as the last procedure after all maps to emit all
+     * word occurrence in the current instance at once.
+     * @param context                   Mapper's context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
       for(String strKey: storage.keySet()){
@@ -100,9 +107,11 @@ public class WordCountPerTaskTally {
     Job job = Job.getInstance(conf, "word count");
     job.setJarByClass(WordCountPerTaskTally.class);
     job.setMapperClass(TokenizerMapper.class);
-//    job.setCombinerClass(IntSumReducer.class);
-    job.setNumReduceTasks(5);
+    //removed combiner
+    //set partitioner
     job.setPartitionerClass(IntPartitioner.class);
+    //set partitioner count
+    job.setNumReduceTasks(5);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);

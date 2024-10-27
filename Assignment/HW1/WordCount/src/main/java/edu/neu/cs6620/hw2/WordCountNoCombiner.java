@@ -19,8 +19,9 @@ public class WordCountNoCombiner {
   public static class TokenizerMapper
       extends Mapper<Object, Text, Text, IntWritable>{
 
-    private final static IntWritable one = new IntWritable(1);
+    private final IntWritable one = new IntWritable(1);
     private final Text word;
+    //add validation service
     private final ValidatorAndPartitioner validatorAndPartitioner;
 
     public TokenizerMapper(){
@@ -34,6 +35,7 @@ public class WordCountNoCombiner {
       StringTokenizer itr = new StringTokenizer(value.toString());
       while (itr.hasMoreTokens()) {
         String curToken = itr.nextToken();
+        //use validation service for filtering
         if(validatorAndPartitioner.isValid(curToken)){
           word.set(curToken);
           context.write(word, one);
@@ -75,7 +77,7 @@ public class WordCountNoCombiner {
      *
      * <p>Typically a hash function on a all or a subset of the key.</p>
      *
-     * @param text          the key to be partioned.
+     * @param text          the key to be partitioned.
      * @param intWritable   the entry value.
      * @param numPartitions the total number of partitions.
      * @return the partition number for the <code>key</code>.
@@ -91,9 +93,11 @@ public class WordCountNoCombiner {
     Job job = Job.getInstance(conf, "word count");
     job.setJarByClass(WordCountNoCombiner.class);
     job.setMapperClass(TokenizerMapper.class);
-//    job.setCombinerClass(IntSumReducer.class);
-    job.setNumReduceTasks(5);
+    //removed combiner
+    //set partitioner
     job.setPartitionerClass(IntPartitioner.class);
+    //set partitioner count
+    job.setNumReduceTasks(5);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);

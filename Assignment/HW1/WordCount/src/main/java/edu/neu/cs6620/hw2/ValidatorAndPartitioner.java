@@ -22,10 +22,23 @@ public class ValidatorAndPartitioner {
         validPrefixMap.put('Q',4);
     }
 
+    /**
+     * Validate and filtering, only words start with m,n,o,o,p,q regardless
+     * of case can pass validation
+     *
+     * @param word          text word
+     * @return              true if word is valid
+     */
     public boolean isValid(String word){
         return !Strings.isNullOrEmpty(word) && validPrefixMap.containsKey(word.charAt(0));
     }
 
+    /**
+     * Validate input word and return corresponded partition index
+     *
+     * @param word          text word
+     * @return              partition index
+     */
     public int partition(String word){
         if(Strings.isNullOrEmpty(word)||!validPrefixMap.containsKey(word.charAt(0))){
             throw new IllegalArgumentException("Dirty Data");

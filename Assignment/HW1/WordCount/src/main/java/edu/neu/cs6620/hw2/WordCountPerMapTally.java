@@ -1,5 +1,9 @@
 package edu.neu.cs6620.hw2;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -11,19 +15,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 public class WordCountPerMapTally {
 
   public static class TokenizerMapper
       extends Mapper<Object, Text, Text, IntWritable>{
 
-    private final static IntWritable one = new IntWritable(1);
     private final Text word;
+    //add validation service
     private final ValidatorAndPartitioner validatorAndPartitioner;
+    // add Map to store word occurrence
     private final Map<String, Integer> storage;
 
     public TokenizerMapper(){
@@ -38,14 +38,17 @@ public class WordCountPerMapTally {
       StringTokenizer itr = new StringTokenizer(value.toString());
       while (itr.hasMoreTokens()) {
         String curToken = itr.nextToken();
+        //Use validator for filtering
         if(validatorAndPartitioner.isValid(curToken)){
           storage.compute(curToken, (k,v)->v==null?1:v+1);
         }
       }
+      // emit all counts in one mapper and storing occurrence in storage
       for(String strKey: storage.keySet()){
         word.set(strKey);
         context.write(word, new IntWritable(storage.get(strKey)));
       }
+      //clear storage
       storage.clear();
     }
   }
@@ -81,7 +84,7 @@ public class WordCountPerMapTally {
      * Get the partition number for a given key (hence record) given the total
      * number of partitions i.e. number of reduce-tasks for the job.
      *
-     * @param text          the key to be partioned.
+     * @param text          the key to be partitioned.
      * @param intWritable   the entry value.
      * @param numPartitions the total number of partitions.
      * @return the partition number for the <code>key</code>.
@@ -97,9 +100,11 @@ public class WordCountPerMapTally {
     Job job = Job.getInstance(conf, "word count");
     job.setJarByClass(WordCountPerMapTally.class);
     job.setMapperClass(TokenizerMapper.class);
-//    job.setCombinerClass(IntSumReducer.class);
-    job.setNumReduceTasks(5);
+    //removed combiner
+    //set partitioner
     job.setPartitionerClass(IntPartitioner.class);
+    //set partitioner count
+    job.setNumReduceTasks(5);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
