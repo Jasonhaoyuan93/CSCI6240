@@ -2,8 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'edu.neu.cs6620.hw1'
-version '1.0'
+group 'edu.neu.cs6240.project.steamsale'
 
 repositories {
     mavenCentral()
@@ -16,15 +15,9 @@ dependencies {
     implementation group: 'org.apache.hadoop', name: 'hadoop-common', version: '3.3.6'
     // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client
     implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '3.3.6'
-}
+    implementation 'org.apache.pig:pig:0.17.0'
 
-//jar {
-//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//    // Will include every single one of your dependencies, project or not
-//    from {
-//        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-//    }
-//}
+}
 
 test {
     useJUnitPlatform()
