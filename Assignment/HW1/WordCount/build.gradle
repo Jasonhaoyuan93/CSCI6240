@@ -16,6 +16,10 @@ dependencies {
     implementation group: 'org.apache.hadoop', name: 'hadoop-common', version: '3.3.6'
     // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client
     implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '3.3.6'
+    // https://mvnrepository.com/artifact/org.apache.hbase/hbase
+    implementation group: 'org.apache.hbase', name: 'hbase', version: '2.6.1'
+    // https://mvnrepository.com/artifact/org.apache.hbase/hbase-client
+    implementation group: 'org.apache.hbase', name: 'hbase-client', version: '2.6.1'
 }
 
 //jar {
